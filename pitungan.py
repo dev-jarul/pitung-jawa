@@ -3,99 +3,29 @@ import datetime
 from datetime import datetime, timedelta
 
 # ==========================================
-# CONFIG & STYLE HALAMAN (SUNTIKAN ANTI DARK MODE TOTAL)
+# CONFIG & STYLE HALAMAN
 # ==========================================
 st.set_page_config(page_title="Primbon & Pitung Adat Jawa", page_icon="🔮", layout="wide")
 
-# Mengambil alih variabel sistem internal Streamlit (:root) agar dipaksa menjadi Light Mode di HP
+# CSS kustom minimalis khusus untuk mempercantik komponen utama
 st.markdown("""
 <style>
-    /* 1. Paksa Variabel Utama Sistem Streamlit Menjadi Tema Terang */
-    :root {
-        --background-color: #FFFFFF !important;
-        --secondary-background-color: #F8F9FA !important;
-        --text-color: #111111 !important;
-        --primary-color: #8B4513 !important;
+    /* Desain teks judul agar memiliki estetika Jawa yang kuat */
+    .main-title { 
+        font-size: 26px !important; 
+        font-weight: bold; 
+        text-align: center; 
+        color: #8B4513 !important; 
+        margin-bottom: 5px; 
     }
-
-    /* 2. Kunci seluruh kontainer latar belakang aplikasi agar tetap putih bersih */
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .main {
-        background-color: #FFFFFF !important;
-        background: #FFFFFF !important;
-    }
-    
-    /* 3. Paksa SEMUA jenis teks di layar menggunakan warna hitam pekat */
-    html, body, div, span, p, a, li, label, section, h1, h2, h3, h4, h5, h6 {
-        color: #111111 !important;
-    }
-
-    /* 4. PERBAIKAN RADIKAL UNTUK INPUT, SELECTBOX, TANGGAL & DROPDOWN */
-    /* Memaksa box inputan (sebelum diklik) agar berlatar terang dan berteks hitam */
-    input, select, textarea, 
-    div[data-baseweb="select"], 
-    div[role="combobox"], 
-    [data-testid="stSelectbox"] >, 
-    [data-testid="stSelectbox"] div,
-    div[class*="stSelectbox"],
-    div[class*="stDateInput"],
-    div[class*="stTimeInput"] {
-        background-color: #F0F2F6 !important;
-        background: #F0F2F6 !important;
-        color: #111111 !important;
-    }
-
-    /* Memaksa teks di dalam box inputan tetap hitam tajam */
-    input[type="text"], input[type="number"], 
-    div[data-baseweb="select"] span, 
-    div[data-baseweb="select"] div,
-    [data-testid="stSelectedOption"] {
-        color: #111111 !important;
-        -webkit-text-fill-color: #111111 !important; /* Khusus untuk HP Safari/Chrome iOS-Android */
-    }
-
-    /* Memperbaiki DAFTAR PILIHAN MODUL (Pop-up menu saat diklik di HP) */
-    div[data-baseweb="menu"], 
-    div[role="listbox"], 
-    div[role="listbox"] ul, 
-    div[role="option"],
-    li[role="option"] {
-        background-color: #FFFFFF !important;
-        background: #FFFFFF !important;
-        color: #111111 !important;
+    .subtitle { 
+        font-size: 13px !important; 
+        text-align: center; 
+        color: #444444 !important; 
+        margin-bottom: 20px; 
     }
     
-    /* Memaksa teks di dalam list pilihan pop-up tetap berwarna hitam saat di-scroll */
-    div[role="option"] *, li[role="option"] * {
-        color: #111111 !important;
-        -webkit-text-fill-color: #111111 !important;
-    }
-
-    /* 5. DESAIN ULANG TOMBOL DOWNLOAD / CETAK */
-    button, [data-testid="stBaseButton-secondary"], [data-testid="stBaseButton-primary"] {
-        background-color: #8B4513 !important;
-        background: #8B4513 !important;
-        color: #FFFFFF !important;
-        border-radius: 8px !important;
-        border: none !important;
-        font-weight: bold !important;
-        padding: 10px 20px !important;
-    }
-    button p, button span {
-        color: #FFFFFF !important;
-        -webkit-text-fill-color: #FFFFFF !important;
-    }
-    
-    /* 6. Label teks petunjuk di atas kolom input */
-    [data-testid="stWidgetLabel"] p, label p, .stSelectbox label, .stDateInput label, .stTimeInput label {
-        color: #111111 !important;
-        font-weight: bold !important;
-    }
-    
-    /* 7. Judul Utama */
-    .main-title { font-size: 26px !important; font-weight: bold; text-align: center; color: #8B4513 !important; margin-bottom: 5px; }
-    .subtitle { font-size: 13px !important; text-align: center; color: #444444 !important; margin-bottom: 20px; }
-    
-    /* 8. Kotak Hasil (Card) */
+    /* Kotak Hasil (Card) Krem dengan border cokelat tegas */
     .card-hasil { 
         background-color: #FFF8DC !important; 
         padding: 18px; 
@@ -106,18 +36,23 @@ st.markdown("""
         margin-bottom: 15px; 
     }
     .card-hasil *, .card-hasil p, .card-hasil h3, .card-hasil h4 { 
-        color: #222222 !important; 
+        color: #111111 !important; 
     }
     
-    /* 9. Status Warna */
+    /* Status warna indikator */
     .status-baik { color: #1B5E20 !important; font-weight: bold; font-size: 16px; } 
     .status-perhatian { color: #B71C1C !important; font-weight: bold; font-size: 16px; } 
     .highlight-text { font-weight: bold; color: #8B4513 !important; }
 
-    /* Kotak Expander */
-    [data-testid="stExpander"] * {
-        color: #111111 !important;
+    /* Desain Tombol Cetak PDF agar kontras tinggi */
+    button, [data-testid="stBaseButton-secondary"] {
+        background-color: #8B4513 !important;
+        color: #FFFFFF !important;
+        border-radius: 8px !important;
+        border: none !important;
+        font-weight: bold !important;
     }
+    button p { color: #FFFFFF !important; }
 
     @media print {
         .stButton, div[data-testid="stSidebar"], header, footer {
