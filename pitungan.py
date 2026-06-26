@@ -3,19 +3,36 @@ import datetime
 from datetime import datetime, timedelta
 
 # ==========================================
-# CONFIG & STYLE HALAMAN
+# CONFIG & STYLE HALAMAN (OPTIMAL UNTUK HP)
 # ==========================================
 st.set_page_config(page_title="Primbon & Pitung Adat Jawa", page_icon="🔮", layout="wide")
 
+# CSS Global untuk mengunci warna teks agar tidak tabrakan dengan dark/light mode HP
 st.markdown("""
 <style>
-    .main-title { font-size: 28px !important; font-weight: bold; text-align: center; color: #8B4513; margin-bottom: 5px; }
-    .subtitle { font-size: 14px !important; text-align: center; color: #555555; margin-bottom: 25px; }
-    .card-hasil { background-color: #FDF5E6; padding: 18px; border-radius: 10px; border-left: 5px solid #8B4513; margin-top: 15px; margin-bottom: 15px; }
-    .status-baik { color: #2E7D32; font-weight: bold; font-size: 16px; }
-    .status-perhatian { color: #C62828; font-weight: bold; font-size: 16px; }
-    .highlight-text { font-weight: bold; color: #8B4513; }
+    /* Mengunci warna teks utama agar selalu terbaca di background terang/gelap */
+    html, body, [data-testid="stWidgetLabel"], .stMarkdown, p, label, li, span {
+        color: #222222 !important;
+    }
     
+    /* Judul Utama */
+    .main-title { font-size: 26px !important; font-weight: bold; text-align: center; color: #8B4513 !important; margin-bottom: 5px; }
+    .subtitle { font-size: 13px !important; text-align: center; color: #555555 !important; margin-bottom: 20px; }
+    
+    /* Kotak Hasil */
+    .card-hasil { background-color: #FDF5E6 !important; padding: 18px; border-radius: 10px; border-left: 5px solid #8B4513; margin-top: 15px; margin-bottom: 15px; }
+    .card-hasil *, .card-hasil p, .card-hasil h3, .card-hasil h4 { color: #333333 !important; }
+    
+    /* Status Warna */
+    .status-baik { color: #2E7D32 !important; font-weight: bold; font-size: 16px; }
+    .status-perhatian { color: #C62828 !important; font-weight: bold; font-size: 16px; }
+    .highlight-text { font-weight: bold; color: #8B4513 !important; }
+    
+    /* Memperjelas teks expander di HP */
+    .st-ae, .st-af, .st-ag, [data-testid="stExpander"] p {
+        color: #222222 !important;
+    }
+
     @media print {
         .stButton, div[data-testid="stSidebar"], header, footer {
             display: none !important;
@@ -37,7 +54,6 @@ DAFTAR_PASARAN = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"]
 NEPTU_HARI = {"Senin": 4, "Selasa": 3, "Rabu": 7, "Kamis": 8, "Jumat": 6, "Sabtu": 9, "Minggu": 5}
 NEPTU_PASARAN = {"Legi": 5, "Pahing": 9, "Pon": 7, "Wage": 4, "Kliwon": 8}
 
-# Mapping otomatis perkiraan konversi bulan masehi ke siklus naga tanah/titik pondasi
 KONVERSI_BULAN_JAWA = {
     1: {"jawa": "Sura / Sapar", "titik": "📐 Sudut Tenggara lahan", "arah": "🧘 Menghadap ke arah Barat"},
     2: {"jawa": "Sapar / Mulud", "titik": "📐 Sudut Tenggara lahan", "arah": "🧘 Menghadap ke arah Barat"},
@@ -53,7 +69,6 @@ KONVERSI_BULAN_JAWA = {
     12: {"jawa": "Besar / Sura", "titik": "📐 Sudut Barat Daya lahan", "arah": "🧘 Menghadap ke arah Utara"}
 }
 
-# Database watak mendalam berdasarkan Jumlah Neptu
 WATAK_NEPTU_DETIL = {
     7: "🎯 Pandalan Jiwa (Pendiam & Merantau): Suka bepergian jauh, setia, jujur, namun cenderung kaku dan sulit dipengaruhi orang lain.",
     8: "🎯 Lakuning Geni (Emosional namun Penolong): Cepat marah tapi cepat reda, pemberani, tidak suka melihat ketidakadilan, berhati emas.",
@@ -80,10 +95,13 @@ def hitung_weton_jawa_akurat(tgl_target, jam_input=None):
     return DAFTAR_HARI[idx_hari], DAFTAR_PASARAN[idx_pasaran]
 
 # ==========================================
-# SIDEBAR NAVIGATION
+# MENU UTAMA DI HALAMAN AWAL (KREASI BARU)
 # ==========================================
-st.sidebar.markdown("### 🔮 MENU UTAMA PITUNG")
-menu_terpilih = st.sidebar.radio("Pilih Modul Perhitungan:", [
+st.markdown('<div class="main-title">🔮 PRIMBON & PITUNG ADAT JAWA</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Sistem Otomatisasi Kalender & Perhitungan Modular Finansial/Keluarga</div>', unsafe_allow_html=True)
+
+# Menu ditaruh di atas halaman menggunakan Selectbox agar rapi dan langsung terlihat di HP
+menu_terpilih = st.selectbox("📂 SILAKAN PILIH MODUL PERHITUNGAN DI SINI:", [
     "🔍 Cek Weton Kelahiran",
     "💍 Puthu Penganten (Jodoh & Hajatan)",
     "🏡 Petungan Rumah & Nyecek Lemah",
@@ -91,19 +109,15 @@ menu_terpilih = st.sidebar.radio("Pilih Modul Perhitungan:", [
     "👶 Siklus & Selamatan Bayi"
 ])
 
-st.sidebar.markdown("---")
-st.sidebar.caption("Aplikasi Primbon Modular V3.5 • Sistem Otomatisasi Kalender")
+st.markdown("---")
 
 # ==========================================
 # MODUL 1: CEK WETON KELAHIRAN
 # ==========================================
 if menu_terpilih == "🔍 Cek Weton Kelahiran":
-    st.markdown('<div class="main-title">🔍 CEK WETON KELAHIRAN LENGKAP</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Analisis watak, perwatakan jam lahir, hari nahas, dan hari baik bawaan lahir</div>', unsafe_allow_html=True)
-    
+    st.subheader("🔍 DATA KELAHIRAN LENGKAP")
     col1, col2 = st.columns([1, 2])
     with col1:
-        st.subheader("Input Data Kelahiran")
         tgl_input = st.date_input("Masukkan Tanggal Lahir:", value=datetime(2000, 1, 1))
         jam_input = st.time_input("Masukkan Jam Lahir (Estimasi):", value=datetime.strptime("08:00", "%H:%M").time())
         
@@ -155,18 +169,17 @@ if menu_terpilih == "🔍 Cek Weton Kelahiran":
 # MODUL 2: PUTHU PENGANTEN
 # ==========================================
 elif menu_terpilih == "💍 Puthu Penganten (Jodoh & Hajatan)":
-    st.markdown('<div class="main-title">💍 PUTHU PENGANTEN & JADWAL HAJATAN</div>', unsafe_allow_html=True)
-    
+    st.subheader("💍 JODOH & JADWAL HAJATAN MALAM")
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader("Data Pria")
+        st.write("**Data Pria**")
         tgl_pria = st.date_input("Tanggal Lahir Pria:", value=datetime(1998, 5, 10))
         h_pria, p_pria = hitung_weton_jawa_akurat(datetime.combine(tgl_pria, datetime.min.time()))
         nep_pria = NEPTU_HARI[h_pria] + NEPTU_PASARAN[p_pria]
         st.caption(f"Weton: {h_pria} {p_pria} (Neptu: {nep_pria})")
         
     with col2:
-        st.subheader("Data Wanita")
+        st.write("**Data Wanita**")
         tgl_wanita = st.date_input("Tanggal Lahir Wanita:", value=datetime(2000, 8, 15))
         h_wanita, p_wanita = hitung_weton_jawa_akurat(datetime.combine(tgl_wanita, datetime.min.time()))
         nep_wanita = NEPTU_HARI[h_wanita] + NEPTU_PASARAN[p_wanita]
@@ -217,22 +230,21 @@ elif menu_terpilih == "💍 Puthu Penganten (Jodoh & Hajatan)":
             
     if hari_baik_ditemukan:
         st.success(f"Ditemukan {len(hari_baik_ditemukan)} pasangan tanggal ideal:")
-        for idx, item in enumerate(hari_baik_ditemukan):  # DIUBAH: Menampilkan semua tanggal tanpa dipotong
+        for idx, item in enumerate(hari_baik_ditemukan):
             st.markdown(f"👉 **Opsi {idx+1}:** Ijab Qabul pada **{item['ijab']}** ({item['weton_ijab']}) & dilanjutkan Resepsi pada **{item['resepsi']}** ({item['weton_resepsi']})")
     else:
         st.warning("Tidak ditemukan tanggal ideal di bulan ini.")
     tambah_tombol_pdf()
 
 # ==========================================
-# MODUL 3: PETUNGAN RUMAH (FIXED SHOW ALL)
+# MODUL 3: PETUNGAN RUMAH
 # ==========================================
 elif menu_terpilih == "🏡 Petungan Rumah & Nyecek Lemah":
-    st.markdown('<div class="main-title">🏡 PETUNGAN RUMAH & NYECEK LEMAH</div>', unsafe_allow_html=True)
-    
+    st.subheader("🏡 ADAT PETUNGAN RUMAH")
     tab1, tab2 = st.tabs(["🧭 Arah Hadap Rumah", "🏗️ Pencarian Hari Baik Nyecek Lemah"])
     
     with tab1:
-        st.subheader("Kecocokan Arah Hadap Rumah")
+        st.write("**Kecocokan Arah Hadap Rumah**")
         tgl_kk = st.date_input("Tanggal Lahir Kepala Keluarga (Suami):", value=datetime(1988, 3, 20), key="rumah_kk")
         h_kk, p_kk = hitung_weton_jawa_akurat(datetime.combine(tgl_kk, datetime.min.time()))
         nep_kk = NEPTU_HARI[h_kk] + NEPTU_PASARAN[p_kk]
@@ -254,9 +266,7 @@ elif menu_terpilih == "🏡 Petungan Rumah & Nyecek Lemah":
         st.markdown(f"<div class='card-hasil'>Arah Hadap Rumah ke <b>{arah_uji}</b> menghasilkan hitungan: <span class='{css_r}'>{nama_r}</span><br><small>{ket_r}</small></div>", unsafe_allow_html=True)
         
     with tab2:
-        st.subheader("Otomatisasi Hari Baik & Jam Ideal Nyecek Lemah")
-        st.write("Cukup pilih bulan kalender Masehi rencana eksekusi, sistem kami yang akan otomatis memetakan siklus adat Jawa.")
-        
+        st.write("**Otomatisasi Hari Baik & Jam Ideal Nyecek Lemah**")
         bln_masehi_pilih = st.selectbox("Pilih Bulan Kalender Masehi:", ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "December"], key="bln_ny")
         thn_masehi_pilih = st.number_input("Tahun Rencana:", min_value=2026, max_value=2035, value=2026, key="thn_ny")
         
@@ -300,7 +310,7 @@ elif menu_terpilih == "🏡 Petungan Rumah & Nyecek Lemah":
                 
         if opsi_nyecek:
             st.success(f"Ditemukan {len(opsi_nyecek)} tanggal ideal di bulan {bln_masehi_pilih} untuk Nyecek Lemah:")
-            for tgl_s, weton_s, status_s, jam_s in opsi_nyecek:  # DIUBAH: Menghilangkan [:4] agar seluruh 15 tanggal tampil lengkap
+            for tgl_s, weton_s, status_s, jam_s in opsi_nyecek:
                 with st.expander(f"📅 Tanggal: {tgl_s} ({weton_s}) — Kategori: {status_s}"):
                     st.write(f"* **Jam Ideal Mulai Menggali:** {jam_s}")
                     st.write(f"* **Titik Pertama Pondasi digali:** {titik_awal}")
@@ -313,7 +323,7 @@ elif menu_terpilih == "🏡 Petungan Rumah & Nyecek Lemah":
 # MODUL 4: PITUNG KEMATIAN
 # ==========================================
 elif menu_terpilih == "🕯️ Pitung Kematian & Kenduri":
-    st.markdown('<div class="main-title">🕯️ PITUNG KEMATIAN & JADWAL KENDURI</div>', unsafe_allow_html=True)
+    st.subheader("🕯️ SIKLUS PERINGATAN KEMATIAN")
     
     tgl_wafat = st.date_input("Tanggal Meninggal (Masehi):", value=datetime.today())
     waktu_kejadian = st.radio("Waktu Kejadian Wafat:", ["Siang / Pagi / Sore (Sebelum 18.00 WIB)", "Malam Hari (Setelah 18.00 WIB - Masuk Adat Esoknya)"])
@@ -349,7 +359,7 @@ elif menu_terpilih == "🕯️ Pitung Kematian & Kenduri":
 # MODUL 5: SIKLUS & SELAMATAN BAYI
 # ==========================================
 elif menu_terpilih == "👶 Siklus & Selamatan Bayi":
-    st.markdown('<div class="main-title">👶 SIKLUS & SELAMATAN BAYI</div>', unsafe_allow_html=True)
+    st.subheader("👶 SIKLUS KELAHIRAN BAYI")
     tgl_lahir_bayi = st.date_input("Tanggal Lahir Bayi:", value=datetime.today())
     tgl_bayi_dt = datetime.combine(tgl_lahir_bayi, datetime.min.time())
     hb, pb = hitung_weton_jawa_akurat(tgl_bayi_dt)
