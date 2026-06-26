@@ -3,35 +3,57 @@ import datetime
 from datetime import datetime, timedelta
 
 # ==========================================
-# CONFIG & STYLE HALAMAN (OPTIMAL UNTUK HP)
+# CONFIG & STYLE HALAMAN (KONTRAST TINGGI HP)
 # ==========================================
 st.set_page_config(page_title="Primbon & Pitung Adat Jawa", page_icon="🔮", layout="wide")
 
-# CSS Global untuk mengunci warna teks agar tidak tabrakan dengan dark/light mode HP
+# Mengunci background ke putih bersih dan memaksa SEMUA teks berwarna gelap (hitam/cokelat tua)
 st.markdown("""
 <style>
-    /* Mengunci warna teks utama agar selalu terbaca di background terang/gelap */
-    html, body, [data-testid="stWidgetLabel"], .stMarkdown, p, label, li, span {
-        color: #222222 !important;
+    /* 1. Kunci Background Aplikasi Utama agar selalu Terang/Putih di HP */
+    .stApp {
+        background-color: #FFFFFF !important;
     }
     
-    /* Judul Utama */
+    /* 2. Paksa SEMUA elemen teks tanpa terkecuali menggunakan warna gelap tajam */
+    html, body, div, span, p, a, li, label, input, select, button, section {
+        color: #111111 !important;
+    }
+    
+    /* 3. Perjelas Teks Label Input & Selectbox bawaan Streamlit */
+    [data-testid="stWidgetLabel"] p, label p, .stSelectbox label, .stDateInput label, .stTimeInput label {
+        color: #111111 !important;
+        font-weight: bold !important;
+        font-size: 15px !important;
+    }
+    
+    /* 4. Memaksa teks di dalam Dropdown / Selectbox / Expander agar tidak putih */
+    div[data-baseweb="select"] *, div[role="listbox"] *, .st-ae, .st-af, .st-ag, [data-testid="stExpander"] * {
+        color: #111111 !important;
+    }
+    
+    /* 5. Styling Judul Utama */
     .main-title { font-size: 26px !important; font-weight: bold; text-align: center; color: #8B4513 !important; margin-bottom: 5px; }
-    .subtitle { font-size: 13px !important; text-align: center; color: #555555 !important; margin-bottom: 20px; }
+    .subtitle { font-size: 13px !important; text-align: center; color: #444444 !important; margin-bottom: 20px; }
     
-    /* Kotak Hasil */
-    .card-hasil { background-color: #FDF5E6 !important; padding: 18px; border-radius: 10px; border-left: 5px solid #8B4513; margin-top: 15px; margin-bottom: 15px; }
-    .card-hasil *, .card-hasil p, .card-hasil h3, .card-hasil h4 { color: #333333 !important; }
-    
-    /* Status Warna */
-    .status-baik { color: #2E7D32 !important; font-weight: bold; font-size: 16px; }
-    .status-perhatian { color: #C62828 !important; font-weight: bold; font-size: 16px; }
-    .highlight-text { font-weight: bold; color: #8B4513 !important; }
-    
-    /* Memperjelas teks expander di HP */
-    .st-ae, .st-af, .st-ag, [data-testid="stExpander"] p {
-        color: #222222 !important;
+    /* 6. Kotak Hasil (Card) dengan Kontras Tinggi */
+    .card-hasil { 
+        background-color: #FFF8DC !important; /* Warna krem matang */
+        padding: 18px; 
+        border-radius: 10px; 
+        border: 2px solid #8B4513 !important; /* Diberi border gelap agar tegas */
+        border-left: 8px solid #8B4513 !important; 
+        margin-top: 15px; 
+        margin-bottom: 15px; 
     }
+    .card-hasil *, .card-hasil p, .card-hasil h3, .card-hasil h4 { 
+        color: #222222 !important; 
+    }
+    
+    /* 7. Status Warna */
+    .status-baik { color: #1B5E20 !important; font-weight: bold; font-size: 16px; } /* Hijau Tua */
+    .status-perhatian { color: #B71C1C !important; font-weight: bold; font-size: 16px; } /* Merah Tua */
+    .highlight-text { font-weight: bold; color: #8B4513 !important; }
 
     @media print {
         .stButton, div[data-testid="stSidebar"], header, footer {
@@ -95,12 +117,11 @@ def hitung_weton_jawa_akurat(tgl_target, jam_input=None):
     return DAFTAR_HARI[idx_hari], DAFTAR_PASARAN[idx_pasaran]
 
 # ==========================================
-# MENU UTAMA DI HALAMAN AWAL (KREASI BARU)
+# MENU UTAMA DI HALAMAN AWAL 
 # ==========================================
 st.markdown('<div class="main-title">🔮 PRIMBON & PITUNG ADAT JAWA</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Sistem Otomatisasi Kalender & Perhitungan Modular Finansial/Keluarga</div>', unsafe_allow_html=True)
 
-# Menu ditaruh di atas halaman menggunakan Selectbox agar rapi dan langsung terlihat di HP
 menu_terpilih = st.selectbox("📂 SILAKAN PILIH MODUL PERHITUNGAN DI SINI:", [
     "🔍 Cek Weton Kelahiran",
     "💍 Puthu Penganten (Jodoh & Hajatan)",
@@ -169,7 +190,7 @@ if menu_terpilih == "🔍 Cek Weton Kelahiran":
 # MODUL 2: PUTHU PENGANTEN
 # ==========================================
 elif menu_terpilih == "💍 Puthu Penganten (Jodoh & Hajatan)":
-    st.subheader("💍 JODOH & JADWAL HAJATAN MALAM")
+    st.subheader("💍 JODOH & JADWAL HAJATAN")
     col1, col2 = st.columns(2)
     with col1:
         st.write("**Data Pria**")
