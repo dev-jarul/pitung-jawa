@@ -3,45 +3,104 @@ import datetime
 from datetime import datetime, timedelta
 
 # ==========================================
-# CONFIG & STYLE HALAMAN (KONTRAST TINGGI HP)
+# CONFIG & STYLE HALAMAN (SUNTIKAN ANTI DARK MODE TOTAL)
 # ==========================================
 st.set_page_config(page_title="Primbon & Pitung Adat Jawa", page_icon="🔮", layout="wide")
 
-# Mengunci background ke putih bersih dan memaksa SEMUA teks berwarna gelap (hitam/cokelat tua)
+# Mengambil alih variabel sistem internal Streamlit (:root) agar dipaksa menjadi Light Mode di HP
 st.markdown("""
 <style>
-    /* 1. Kunci Background Aplikasi Utama agar selalu Terang/Putih di HP */
-    .stApp {
+    /* 1. Paksa Variabel Utama Sistem Streamlit Menjadi Tema Terang */
+    :root {
+        --background-color: #FFFFFF !important;
+        --secondary-background-color: #F8F9FA !important;
+        --text-color: #111111 !important;
+        --primary-color: #8B4513 !important;
+    }
+
+    /* 2. Kunci seluruh kontainer latar belakang aplikasi agar tetap putih bersih */
+    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .main {
         background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
     }
     
-    /* 2. Paksa SEMUA elemen teks tanpa terkecuali menggunakan warna gelap tajam */
-    html, body, div, span, p, a, li, label, input, select, button, section {
+    /* 3. Paksa SEMUA jenis teks di layar menggunakan warna hitam pekat */
+    html, body, div, span, p, a, li, label, section, h1, h2, h3, h4, h5, h6 {
+        color: #111111 !important;
+    }
+
+    /* 4. PERBAIKAN RADIKAL UNTUK INPUT, SELECTBOX, TANGGAL & DROPDOWN */
+    /* Memaksa box inputan (sebelum diklik) agar berlatar terang dan berteks hitam */
+    input, select, textarea, 
+    div[data-baseweb="select"], 
+    div[role="combobox"], 
+    [data-testid="stSelectbox"] >, 
+    [data-testid="stSelectbox"] div,
+    div[class*="stSelectbox"],
+    div[class*="stDateInput"],
+    div[class*="stTimeInput"] {
+        background-color: #F0F2F6 !important;
+        background: #F0F2F6 !important;
+        color: #111111 !important;
+    }
+
+    /* Memaksa teks di dalam box inputan tetap hitam tajam */
+    input[type="text"], input[type="number"], 
+    div[data-baseweb="select"] span, 
+    div[data-baseweb="select"] div,
+    [data-testid="stSelectedOption"] {
+        color: #111111 !important;
+        -webkit-text-fill-color: #111111 !important; /* Khusus untuk HP Safari/Chrome iOS-Android */
+    }
+
+    /* Memperbaiki DAFTAR PILIHAN MODUL (Pop-up menu saat diklik di HP) */
+    div[data-baseweb="menu"], 
+    div[role="listbox"], 
+    div[role="listbox"] ul, 
+    div[role="option"],
+    li[role="option"] {
+        background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
         color: #111111 !important;
     }
     
-    /* 3. Perjelas Teks Label Input & Selectbox bawaan Streamlit */
+    /* Memaksa teks di dalam list pilihan pop-up tetap berwarna hitam saat di-scroll */
+    div[role="option"] *, li[role="option"] * {
+        color: #111111 !important;
+        -webkit-text-fill-color: #111111 !important;
+    }
+
+    /* 5. DESAIN ULANG TOMBOL DOWNLOAD / CETAK */
+    button, [data-testid="stBaseButton-secondary"], [data-testid="stBaseButton-primary"] {
+        background-color: #8B4513 !important;
+        background: #8B4513 !important;
+        color: #FFFFFF !important;
+        border-radius: 8px !important;
+        border: none !important;
+        font-weight: bold !important;
+        padding: 10px 20px !important;
+    }
+    button p, button span {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+    
+    /* 6. Label teks petunjuk di atas kolom input */
     [data-testid="stWidgetLabel"] p, label p, .stSelectbox label, .stDateInput label, .stTimeInput label {
         color: #111111 !important;
         font-weight: bold !important;
-        font-size: 15px !important;
     }
     
-    /* 4. Memaksa teks di dalam Dropdown / Selectbox / Expander agar tidak putih */
-    div[data-baseweb="select"] *, div[role="listbox"] *, .st-ae, .st-af, .st-ag, [data-testid="stExpander"] * {
-        color: #111111 !important;
-    }
-    
-    /* 5. Styling Judul Utama */
+    /* 7. Judul Utama */
     .main-title { font-size: 26px !important; font-weight: bold; text-align: center; color: #8B4513 !important; margin-bottom: 5px; }
     .subtitle { font-size: 13px !important; text-align: center; color: #444444 !important; margin-bottom: 20px; }
     
-    /* 6. Kotak Hasil (Card) dengan Kontras Tinggi */
+    /* 8. Kotak Hasil (Card) */
     .card-hasil { 
-        background-color: #FFF8DC !important; /* Warna krem matang */
+        background-color: #FFF8DC !important; 
         padding: 18px; 
         border-radius: 10px; 
-        border: 2px solid #8B4513 !important; /* Diberi border gelap agar tegas */
+        border: 2px solid #8B4513 !important; 
         border-left: 8px solid #8B4513 !important; 
         margin-top: 15px; 
         margin-bottom: 15px; 
@@ -50,10 +109,15 @@ st.markdown("""
         color: #222222 !important; 
     }
     
-    /* 7. Status Warna */
-    .status-baik { color: #1B5E20 !important; font-weight: bold; font-size: 16px; } /* Hijau Tua */
-    .status-perhatian { color: #B71C1C !important; font-weight: bold; font-size: 16px; } /* Merah Tua */
+    /* 9. Status Warna */
+    .status-baik { color: #1B5E20 !important; font-weight: bold; font-size: 16px; } 
+    .status-perhatian { color: #B71C1C !important; font-weight: bold; font-size: 16px; } 
     .highlight-text { font-weight: bold; color: #8B4513 !important; }
+
+    /* Kotak Expander */
+    [data-testid="stExpander"] * {
+        color: #111111 !important;
+    }
 
     @media print {
         .stButton, div[data-testid="stSidebar"], header, footer {
