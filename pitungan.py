@@ -297,7 +297,7 @@ if tgl_input:
     """
     
     # Mengalirkan komponen sertifikat interaktif ke dalam halaman web app (Tinggi dinaikkan sedikit ke 820 karena tabel melebar)
-    st.components.v1.html(html_sertifikat, height=820, scrolling=False)
+    st.components.v1.html(html_sertifikat, height=1150, scrolling=True)
 
 # Footer Aplikasi
 st.markdown("---")
