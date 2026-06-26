@@ -64,7 +64,7 @@ if tgl_input:
     h_wafat, p_wafat = hitung_weton_jawa(tgl_hitung_jawa)
     weton_wafat_lengkap = f"{h_wafat} {p_wafat}"
     
-    st.subheader("📊 Hasil Perhitungan Tradisional")
+    st.subheader("📊 Hasil Perhitungan Tradisional & Jadwal Kenduri")
     
     # Alert Box Informasi Weton Utama
     st.warning(
@@ -93,20 +93,32 @@ if tgl_input:
         tgl_peringatan = tgl_hitung_jawa + timedelta(days=tambah_hari)
         h_per, p_per = hitung_weton_jawa(tgl_peringatan)
         weton_per_lengkap = f"{h_per} {p_per}"
-        tgl_per_str = tgl_peringatan.strftime('%d/%m/%Y')
         
-        # UI Streamlit Expander
+        # LOGIKA KENDURI TRADISIONAL JAWA:
+        # Acara kenduri/selamatan dilakukan malam hari sebelum hari H pitung masehi (H-1 sore setelah Magrib)
+        tgl_kenduri = tgl_peringatan - timedelta(days=1)
+        h_kenduri, p_kenduri = hitung_weton_jawa(tgl_kenduri)
+        
+        tgl_per_str = tgl_peringatan.strftime('%d/%m/%Y')
+        tgl_kenduri_str = tgl_kenduri.strftime('%d/%m/%Y')
+        
+        # UI Streamlit Expander yang Informatif bagi Tuan Rumah
         with st.expander(f"📌 {nama_peringatan}", expanded=True):
-            col1, col2 = st.columns([1, 1])
-            col1.write(f"**Weton:** {weton_per_lengkap}")
-            col2.write(f"**Tanggal:** {tgl_per_str}")
+            st.markdown(f"**Weton Pitung:** {weton_per_lengkap} ({tgl_per_str})")
+            st.markdown(f"🟩 **JADWAL KENDURI:** **{h_kenduri} {p_kenduri} Malam**, Tanggal **{tgl_kenduri_str}** *(Habis Magrib)*")
             
         # Baris Tabel untuk Template PDF
         html_rows += f"""
         <tr>
             <td class="label">{nama_peringatan}</td>
-            <td>: {weton_per_lengkap}</td>
-            <td style="text-align: right; font-weight: bold;">{tgl_per_str}</td>
+            <td>
+                <b>{weton_per_lengkap}</b><br>
+                <span style="font-size:11px; color:#666;">Hari H: {tgl_per_str}</span>
+            </td>
+            <td class="kenduri-col">
+                <b>{h_kenduri} {p_kenduri} Malam</b><br>
+                <span>{tgl_kenduri_str} (Habis Magrib)</span>
+            </td>
         </tr>
         """
         
@@ -125,20 +137,18 @@ if tgl_input:
         }}
         .cert-container {{
             border: 6px double #4a3b32;
-            padding: 35px 30px;
-            /* Nuansa Jawa: Latar belakang warna gading dengan tekstur halus Batik Kawung Keraton via SVG Base64 */
+            padding: 35px 25px;
             background-color: #fcf9f2;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj4KPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGEzYjMyIiBzdHJva2Utd2lkdGg9IjAuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyNSIvPgo8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iMjUiLz4KPGNpcmNsZSBjeD0iNjAiIGN5PSIwIiByPSIyNSIvPgo8Y2lyY2xlIGN4PSIwIiBjeT0iNjAiIHI9IjI1Ii8+CjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjI1Ii8+CjxwYXRoIGQ9Ik00MCw1IEwzMCw1NSBNNSwzMCBMNTUsMzAiLz4KPC9nPgo8L3N2Zz4=');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj4KPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGEzYjMyIiBzdHJva2Utd2lkdGg9IjAuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyNSIvPgo8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iMjUiLz4KPGNpcmNsZSBjeD0iNjAiIGN5PSIwIiByPSIyNSIvPgo8Y2lyY2xlIGN4PSIwIiBjeT0iNjAiIHI9IjI1Ii8+CjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjI1Ii8+CjxwYXRoIGQ9Ik0zMCw1IEwzMCw1NSBNNSwzMCBMNTUsMzAiLz4KPC9nPgo8L3N2Zz4=');
             font-family: 'Georgia', serif;
             color: #333;
             text-align: center;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(74,59,50,0.1);
             margin: 10px auto;
-            max-width: 600px;
+            max-width: 620px;
             position: relative;
         }}
-        /* Ornamen Pojok Klasik Khas Piagam Jawa Lama */
         .cert-container::before {{
             content: "◆";
             position: absolute;
@@ -164,7 +174,6 @@ if tgl_input:
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 5px;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
         }}
         .cert-subtitle {{
             font-size: 13px;
@@ -181,23 +190,35 @@ if tgl_input:
             color: #4a3b32;
             margin-bottom: 25px;
             border: 1px dashed #4a3b32;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.02);
         }}
         .cert-table {{
             width: 100%;
             margin: 15px 0;
             border-collapse: collapse;
         }}
+        .cert-table th {{
+            background-color: #4a3b32;
+            color: #fff;
+            padding: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
         .cert-table td {{
-            padding: 10px 8px;
+            padding: 10px 6px;
             text-align: left;
-            font-size: 13.5px;
+            font-size: 12.5px;
             border-bottom: 1px dashed #cfc8b9;
+            vertical-align: middle;
         }}
         .cert-table td.label {{
             font-weight: bold;
             color: #4a3b32;
-            width: 45%;
+        }}
+        .kenduri-col {{
+            background-color: rgba(40, 167, 69, 0.05);
+            border-left: 2px solid #28a745;
+            color: #1e622b;
         }}
         .watermark-container {{
             margin-top: 35px;
@@ -239,8 +260,8 @@ if tgl_input:
     </head>
     <body>
         <div class="cert-container">
-            <div class="cert-title">🕯️ Rincian Pitung Jawa 🕯️</div>
-            <div class="cert-subtitle">Kalender Jadwal Peringatan Adat Kematian</div>
+            <div class="cert-title">🕯️ Piagam Pitung Jawa 🕯️</div>
+            <div class="cert-subtitle">Panduan Jadwal Kenduri Peringatan Adat Kematian</div>
             
             <div class="main-weton">
                 Weton Wafat: {weton_wafat_lengkap.upper()}<br>
@@ -250,24 +271,33 @@ if tgl_input:
             </div>
             
             <table class="cert-table">
-                {html_rows}
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">Peringatan</th>
+                        <th style="text-align:left;">Hari H & Weton</th>
+                        <th style="text-align:left; background-color:#28a745;">📅 WAKTU KENDURI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {html_rows}
+                </tbody>
             </table>
             
             <div class="watermark-container">
                 <div class="watermark-text">✍️ JARULISME.DEV-APP</div>
-                <div class="watermark-sub">Verified Pitung Certificate</div>
+                <div class="watermark-sub">Verified Pitung & Kenduri Schedule</div>
             </div>
             
             <div class="no-print" style="margin-top: 25px;">
-                <button class="print-btn" onclick="window.print()">📥 Download / Cetak Sebagai PDF</button>
+                <button class="print-btn" onclick="window.print()">📥 Download / Cetak Jadwal Kenduri (PDF)</button>
             </div>
         </div>
     </body>
     </html>
     """
     
-    # Mengalirkan komponen sertifikat interaktif ke dalam halaman web app
-    st.components.v1.html(html_sertifikat, height=760, scrolling=False)
+    # Mengalirkan komponen sertifikat interaktif ke dalam halaman web app (Tinggi dinaikkan sedikit ke 820 karena tabel melebar)
+    st.components.v1.html(html_sertifikat, height=820, scrolling=False)
 
 # Footer Aplikasi
 st.markdown("---")
